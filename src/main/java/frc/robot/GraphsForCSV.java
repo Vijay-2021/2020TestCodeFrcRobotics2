@@ -14,6 +14,7 @@
  * and open the template in the editor.
  */
 package frc.robot;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,6 +35,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.stage.Stage;
+
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.event.EventHandler;
@@ -55,94 +57,100 @@ import javafx.stage.Stage;
 import javax.swing.event.HyperlinkEvent;
 import frc.robot.LoadCSV;
 import frc.robot.CSVClient;
+
 /**
  *
  * @author vshah-21
  */
 public class GraphsForCSV extends Application {
     ArrayList<String[]> points = new ArrayList<String[]>();
-    
+
     ArrayList<CheckBox> boxes;
     String[] headings;
     double[] scaleFactor;
     double[][] pointArrays;
+    int WIDTH = 800; 
+    int HEIGHT = 700;
     int currentColumn = 2;
-    
-   // ArrayList<Boolean> graphBooleans = new ArrayList<Boolean>();
+
+    // ArrayList<Boolean> graphBooleans = new ArrayList<Boolean>();
     boolean wasRan = false;
     double setpoint = 0;
+
     @Override
     public void start(Stage primaryStage) {
-        
+
         Group root = new Group();
-        Canvas background = new Canvas(1500,900);
+        Canvas background = new Canvas(WIDTH, HEIGHT);
         root.getChildren().add(background);
         Button runGraphServer = new Button("graphScene");
         Button runGraphDefault = new Button("default Graph");
         Button startVideoPlayer = new Button("Video Player");
         final FileChooser fileChooser = new FileChooser();
- 
+
         final Button openButton = new Button("Open a Picture...");
         final Button openMultipleButton = new Button("Open Pictures...");
- 
-        openButton.setOnAction(
-            new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(final ActionEvent e) {
-                    fileChooser.setInitialDirectory(new File("D:\\MyProfile\\Documents\\NetBeansProjects\\GraphsForCSV\\"));
-                    
-                    File file = fileChooser.showOpenDialog(primaryStage);
-                    
-                    if (file != null) {
-                         
-                        graphCSVScene(primaryStage,file.getAbsolutePath());
-                    
-                    }
+
+        openButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent e) {
+                fileChooser.setInitialDirectory(new File("D:\\MyProfile\\Documents\\NetBeansProjects\\GraphsForCSV\\"));
+
+                File file = fileChooser.showOpenDialog(primaryStage);
+
+                if (file != null) {
+
+                    graphCSVScene(primaryStage, file.getAbsolutePath());
+
                 }
-            });
-        EventHandler<ActionEvent> drawFromServer = (ActionEvent e) ->{
-            CSVClient csvCreator = new CSVClient("10.58.95.2",5800);///thread will run until connection made
-            graphCSVScene(primaryStage,csvCreator.fileName());
-            
+            }
+        });
+        EventHandler<ActionEvent> drawFromServer = (ActionEvent e) -> {
+            CSVClient csvCreator = new CSVClient("10.58.95.2", 5800);/// thread will run until connection made
+            graphCSVScene(primaryStage, csvCreator.fileName());
+
         };
-        EventHandler<ActionEvent> graphLatest = (ActionEvent e) ->{
-            graphCSVScene(primaryStage,"D:\\MyProfile\\Documents\\NetBeansProjects\\GraphsForCSV\\DefaultGraph.csv");//default graph loc
+        EventHandler<ActionEvent> graphLatest = (ActionEvent e) -> {
+            graphCSVScene(primaryStage, "D:\\MyProfile\\Documents\\NetBeansProjects\\GraphsForCSV\\DefaultGraph.csv");// default
+                                                                                                                      // graph
+                                                                                                                      // loc
         };
-          System.out.println("client graphessssssr");
-        EventHandler<ActionEvent> videoButtonPressed = (ActionEvent es)->{
+        System.out.println("client graphessssssr");
+        EventHandler<ActionEvent> videoButtonPressed = (ActionEvent es) -> {
             System.out.println("ran");
             videoScene(primaryStage);
         };
-        
+
         startVideoPlayer.addEventHandler(ActionEvent.ACTION, videoButtonPressed);
         runGraphServer.addEventHandler(ActionEvent.ACTION, drawFromServer);
-        runGraphDefault.addEventHandler(ActionEvent.ACTION,graphLatest);
+        runGraphDefault.addEventHandler(ActionEvent.ACTION, graphLatest);
         root.getChildren().add(openButton);
-        openButton.relocate(200,600);
+        openButton.relocate(200, 600);
         root.getChildren().add(startVideoPlayer);
         root.getChildren().add(runGraphDefault);
         startVideoPlayer.relocate(200, 300);
         root.getChildren().add(runGraphServer);
         runGraphServer.relocate(200, 200);
-        runGraphDefault.relocate(200,400);
+        runGraphDefault.relocate(200, 400);
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
         System.out.println("running and not breaking?");
     }
-    
-    public void videoScene(Stage primaryStage){
-        
+
+    public void videoScene(Stage primaryStage) {
+
         Group root = new Group();
-        Canvas mainCanvas = new Canvas(1500,900);
+        Canvas mainCanvas = new Canvas(WIDTH, HEIGHT);
         root.getChildren().add(mainCanvas);
-       
+
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
-    public void graphCSVScene(Stage primaryStage, String filename){
+
+    public void graphCSVScene(Stage primaryStage, String filename) {
         System.out.println("filename " + filename);
         LoadCSV load = new LoadCSV();
-        
+
         System.out.println("file name");
         pointArrays = load.loadCSV(filename);
         headings = load.getHeading();
@@ -150,48 +158,51 @@ public class GraphsForCSV extends Application {
         variables = load.getHeading();
         primaryStage.setTitle("Drawing Operations Test");
         Group root = new Group();
-        Canvas canvas = new Canvas(1500, 900);
+        Canvas canvas = new Canvas(WIDTH, HEIGHT);
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        
+
         primaryStage.setTitle("This is really running");
-         boxes = new ArrayList<CheckBox>();
-         
-         EventHandler<ActionEvent> eventHandlerTextFields = (ActionEvent e) ->{
+        boxes = new ArrayList<CheckBox>();
+
+        EventHandler<ActionEvent> eventHandlerTextFields = (ActionEvent e) -> {
             System.out.println("happening");
         };
-        
+
         EventHandler<ActionEvent> eventHandlerTextField;
         eventHandlerTextField = (ActionEvent event) -> {
-            //Playing the animation
-            try{
+            // Playing the animation
+            try {
                 System.out.println("running this");
-                gc.clearRect(0, 0, 1500, 900);
-                printVars(gc,variables);
+                gc.clearRect(0, 0, WIDTH, HEIGHT);
+                printVars(gc, variables);
                 gc.setFill(Color.BLACK);
                 gc.setStroke(Color.BLUE);
-            
-                calcAndDrawAxes(pointArrays,900,450,gc);
-                drawGraph(gc,pointArrays);
-            
-            }catch(Exception e){
-                
+
+                calcAndDrawAxes(pointArrays, HEIGHT, (HEIGHT/2), gc);
+                drawGraph(gc, pointArrays);
+
+            } catch (Exception e) {
+
             }
-            
+
         };
-        EventHandler<MouseEvent> drawLineAndPoints = (MouseEvent dragged) ->{
-            gc.clearRect(0, 0, 1500, 900);
+        EventHandler<MouseEvent> drawLineAndPoints = (MouseEvent dragged) -> {
+            if(dragged.getSceneX()%2==0){
+            gc.clearRect(0, 0, WIDTH, HEIGHT);
             calcIntersections(gc,pointArrays,dragged.getSceneX());
-            calcAndDrawAxes(pointArrays,900,450,gc);
+            calcAndDrawAxes(pointArrays,HEIGHT,(HEIGHT/2),gc);
             drawGraph(gc,pointArrays);
+            }
         };
        
         Button but = new Button("Testing?");
         but.relocate(200, 200);
        
         but.addEventHandler(ActionEvent.ACTION, eventHandlerTextField);
-        System.out.println("here?");
+       // System.out.println("here?");
         //canvas.addEventHandler(KeyEvent.KEY_PRESSED, eventHandlerTextField);
         canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, drawLineAndPoints);
+    
        
         
         VBox layout= new VBox(5);
@@ -201,19 +212,21 @@ public class GraphsForCSV extends Application {
                 CheckBox checky = new CheckBox(headings[i]);
                 
                 boxes.add(checky);
-                boxes.get(i).relocate(20,50+ 400*((double)i/pointArrays[0].length));
+                boxes.get(i).relocate(20,50+ ((double)HEIGHT/2)*((double)i/pointArrays[0].length));
                 //boxes.get(i).addEventHandler(ActionEvent.ACTION, eventHandlerTextFields);
                 layout.getChildren().add(boxes.get(i));
                 }catch(Exception e){
                     
                 }
         }
+        
         layout.getChildren().add(but);
         root.getChildren().add(canvas);
         
         root.getChildren().add(layout);
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
+        
         System.out.println("running and not breaking?");
     
     }
@@ -223,7 +236,7 @@ public class GraphsForCSV extends Application {
         }
     }
     public double findLength(int min, int max, int scale){
-        return ((double)450/scale);
+        return ((double)HEIGHT/scale);
     }
     
     public void calcAndDrawAxes(double[][] pointArray, int maxLen, int minLen,GraphicsContext gc){
@@ -247,8 +260,8 @@ public class GraphsForCSV extends Application {
             }
         }
         gc.setStroke(Color.GREEN);
-        gc.strokeLine(5,0,5,900);
-        gc.strokeLine(0,450,900,450);
+        gc.strokeLine(5,0,5,WIDTH);
+        gc.strokeLine(0,(double)HEIGHT/2,WIDTH,(double)HEIGHT/2);
         Line lines;
         
         for(int i =0; i < min.length;i++){
@@ -260,8 +273,8 @@ public class GraphsForCSV extends Application {
     public void drawAxes(GraphicsContext gc,double factor){
         for(int i =0; i < 20; i++){
             gc.setFont(new Font(10));
-           String formated = String.format("%.2f",(((double)1/factor)*(-450+900*((double)i/20))));
-            gc.strokeText(""+ formated,20,900-(900*((double)i/20)));
+           String formated = String.format("%.2f",(((double)1/factor)*(-(HEIGHT/2)+HEIGHT*((double)i/20))));
+            gc.strokeText(""+ formated,20,WIDTH-(WIDTH*((double)i/20)));
             
              //System.out.println("Scale factor" + scaleFactor[5]);
         }
@@ -297,14 +310,14 @@ public class GraphsForCSV extends Application {
             for(int j = 0; j < pointList[i].length;j++){
                 if(boxes.get(j).isSelected()){
                     if(mouseX==2*i||mouseX==2*i + 1){
-                        double pY = 450+(pointList[i-1][j]*currentScale);
+                        double pY = (HEIGHT/2)+(pointList[i-1][j]*currentScale);
                         
                         gc.setStroke(Color.BLUE);
-                        gc.strokeLine(mouseX, 0,mouseX, 900);
+                        gc.strokeLine(mouseX, 0,mouseX, WIDTH);
                         gc.setFont(new Font(20));
                         String formattedPList = String.format("%.2f",pointList[i][j]);
-                         gc.strokeText(headings[j]+ " Intersect At", mouseX, 450+offset);
-                         gc.strokeText( "MOUSE X: " + mouseX + " Y LOC: " + formattedPList,mouseX, 450+40+offset);
+                         gc.strokeText(headings[j]+ " Intersect At", mouseX, (HEIGHT/2)+offset);
+                         gc.strokeText( "MOUSE X: " + mouseX + " Y LOC: " + formattedPList,mouseX, (HEIGHT/2)+40+offset);
                          offset+=80;
                     }
                 }
@@ -325,10 +338,9 @@ public class GraphsForCSV extends Application {
             }
         }
         for(int i =1; i <pointList.length;i++){
-            // System.out.println("point output " +(900-(pointList[i-1][1]*scaleFactor[1])));
             for(int j =0; j < pointList[i].length;j++){
                 if(boxes.get(j).isSelected()){
-                    gc.strokeLine(2*i - 1,450+(pointList[i-1][j]*currentScale),i*2,450+(pointList[i][j]*currentScale));                          
+                    gc.strokeLine(2*i - 1,(HEIGHT/2)+(pointList[i-1][j]*currentScale),i*2,(HEIGHT/2)+(pointList[i][j]*currentScale));                          
                 }
             }
         }
@@ -337,7 +349,7 @@ public class GraphsForCSV extends Application {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String... args) {
         launch(args);
     }
     

@@ -24,12 +24,11 @@ public class centerArbWithTx extends CommandBase {
   boolean txNavSame = false;
   int center = 0;
   boolean centered = false;
-  public centerArbWithTx(basanShooter shoot, Limelight lime, DriveTrain train, int center) {
+  public centerArbWithTx(basanShooter shoot, Limelight lime, DriveTrain train, int centers) {
     shooty = shoot; 
     trains = train;
     limes=lime;
-    SmartDashboard.putNumber("p value",0.02);
-    this.center = side(center);
+    center = centers;
     // Use addRequirements() here to declare subsystem dependencies.
   }
   public int side(int center){
@@ -37,13 +36,13 @@ public class centerArbWithTx extends CommandBase {
    if(shooty.angle()>0){
      return -center;
    }
-  return +center;
+  return center;
 }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    
+   center = side(center); 
 
 
   }
@@ -57,39 +56,56 @@ public class centerArbWithTx extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    trains.arcadeDrive();
-    double p = SmartDashboard.getNumber("p value", 0.0);
-    double p2= SmartDashboard.getNumber("p2",0.0);
-    double tx = limes.getTx();
-    SmartDashboard.putNumber("tx", tx);
-    if(Math.abs(Math.abs(tx)-center)>1){
-      
-      SmartDashboard.putString("State","centering tx to " + center);
-      SmartDashboard.putNumber("value of arb p1 ",-keepArbSign(center,tx)*Math.max(0.2,p*Math.abs(Math.abs(tx)-center)));
-      SmartDashboard.putNumber("value arb keepsign", keepArbSign(center,tx));
-      trains.setTurn(-keepArbSign(center,tx)*Math.max(0.3,p*Math.abs(Math.abs(tx)-center)));
+    double tx = 0;
+    SmartDashboard.putBoolean("is right", (20==center));
+    
+    if(limes.hasTarget()){
+          trains.arcadeDrive();
+          double p = SmartDashboard.getNumber("p value", 0.0);
+          double p2= SmartDashboard.getNumber("p2",0.0);
+          tx = limes.getTx();
+          SmartDashboard.putNumber("tx", tx);
+          if(Math.abs(Math.abs(tx)-center)>1){
+            SmartDashboard.putNumber("center goal",center);
+            
+            SmartDashboard.putString("State","centering tx to " + center);
+            SmartDashboard.putNumber("value of arb p1 ",-keepArbSign(center,tx)*Math.max(0.3,p*Math.abs(tx-center)));
+            SmartDashboard.putNumber("value arb keepsign", keepArbSign(center,tx));
+            trains.setTurn(-keepArbSign(center,tx)*Math.max(0.3,p*Math.abs(tx-center)));
 
-    }else if(Math.abs(Math.abs(tx)-center)>0.2){
-      DriverStation.reportError("P command " + (keepArbSign(center,tx)*0.15) ,false);
-      trains.setTurn(keepArbSign(center,tx)*p2*tx);
-   }else{
-    if(shooty.angle()==tx){
+
+          }else if(Math.abs(Math.abs(tx)-center)>0.2){
+            SmartDashboard.putNumber("P command 2 " ,-keepArbSign(center,tx)*Math.max(0.25,p2*Math.abs(tx-center)));
+            trains.setTurn(-keepArbSign(center,tx)*Math.max(0.25,p2*Math.abs(tx-center)));
+        }else{
+          
+            centered = true;
+        }
+    }else{
+      trains.setSpeed(0);
+      trains.setTurn(0);
+      trains.arcadeDrive();
+    }  
+    if(Math.abs(shooty.angle()+center)<1&&Math.abs(tx-center)<1){
+    
       txNavSame = true;
     }  
-      centered = true;
-   }
+    SmartDashboard.putNumber("shooty angle",shooty.angle());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    trains.setSpeed(0);
+    trains.setTurn(0);
+    trains.arcadeDrive();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     if(center!=0){
-    return txNavSame;
+      return txNavSame;
     }else{
       return centered; 
     }

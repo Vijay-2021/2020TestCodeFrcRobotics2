@@ -53,8 +53,6 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     double p = 0.03;
-    SmartDashboard.putNumber("p value",p);  
-    SmartDashboard.putNumber("p2",0.15);
     leftJoystick = new Joystick(0);
     button1 = new JoystickButton(leftJoystick,1);
     button2 = new JoystickButton(leftJoystick,2);

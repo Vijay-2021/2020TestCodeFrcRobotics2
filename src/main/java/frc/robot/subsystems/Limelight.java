@@ -21,7 +21,7 @@ public class Limelight extends SubsystemBase {
   NetworkTableEntry ty = limes.getEntry("ty");
   NetworkTableEntry thor = limes.getEntry("thor");
   NetworkTableEntry tvert = limes.getEntry("tvert");
-
+  NetworkTableEntry tv = limes.getEntry("tv");
   public Limelight() {
     
   }
@@ -29,11 +29,15 @@ public class Limelight extends SubsystemBase {
     return tvert.getDouble(0.0);
 
   }
+  
   public double getThor(){
     return thor.getDouble(0.0);
   }
   public double getTx(){
     return tx.getDouble(0.0);
+  }
+  public boolean hasTarget(){
+    return (tv.getDouble(0.0)==1);
   }
   @Override
   public void periodic() {

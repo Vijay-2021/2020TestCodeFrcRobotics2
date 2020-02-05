@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.analog.adis16470.frc.ADIS16470_IMU;
+
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -74,6 +76,7 @@ public class basanShooter extends SubsystemBase{
 	public void resetNavx(){
 		nav.reset();
 	}
+	ADIS16470_IMU im;
 	/**
 	 * Conveyor goes in reverse
 	 */

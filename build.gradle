@@ -1,16 +1,22 @@
+
+
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2020.1.1"
+    id "application"
+    id "edu.wpi.first.GradleRIO" version "2020.1.2"
+     id 'org.openjfx.javafxplugin' version '0.0.8'
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
-repositories {
-      jcenter()
-      maven { url "https://jitpack.io" }
-   }
+//adds 
+repositories{
+    mavenCentral()
+
+}
+
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project EmbeddedTools.
 deploy {
@@ -49,23 +55,38 @@ dependencies {
     implementation wpi.deps.wpilib()
     nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
-
-
+   
     implementation wpi.deps.vendor.java()
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
 
     testImplementation 'junit:junit:4.12'
-     compile 'com.github.Team319:BobTrajectory:v2.1.0'
+    //compile all default javafx packages for smoot graphics(windows is our operating sys i suppose could be made for multiple )
+    implementation("org.openjfx:javafx-fxml:11:win")
+	    implementation("org.openjfx:javafx-web:11:win")
+	    implementation("org.openjfx:javafx-media:11:win")
+	    implementation("org.openjfx:javafx-swing:11:win")
+	    implementation("org.openjfx:javafx-base:11:win")
+	    implementation("org.openjfx:javafx-graphics:11:win")
+	    implementation("org.openjfx:javafx-controls:11:win")
     // Enable simulation gui support. Must check the box in vscode to enable support
     // upon debugging
     simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
 }
 
+
+mainClassName = "frc.robot.GraphsForCSV"
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
 // in order to make them all available at runtime. Also adding the manifest so WPILib
 // knows where to look for our Robot Class.
 jar {
     from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
+}
+ javafx {
+     
+ 
+    
+    modules = [ 'javafx.controls', 'javafx.fxml']
+    version = "11.0.2"
 }
